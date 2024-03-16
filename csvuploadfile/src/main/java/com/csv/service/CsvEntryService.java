@@ -1,5 +1,6 @@
 package com.csv.service;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -26,12 +27,20 @@ public class CsvEntryService {
         try {
             List<CsvEntry> products = ExcelHelper.convertExcelToListOfProduct(file.getInputStream(), f);
             this.csvRepo.saveAll(products);
-            f.setProcessing(true);
+            f.setProcessing(false);
             fRepo.save(f);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
+	
+	public ByteArrayInputStream getDataByFile(File f) {
+		List<CsvEntry> all = csvRepo.findByFile(f);
+		
+		ByteArrayInputStream byteArrayInputStream = ExcelHelper.dataToExcel(all);
+		
+		return byteArrayInputStream;
+	}
 
 }
